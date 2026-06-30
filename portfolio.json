@@ -9,8 +9,8 @@
       "ticker": "IWDA",
       "name": "iShares Core MSCI World ETF",
       "exchange": "AMS",
-      "shares": 5,
-      "avgBuyPrice": 95.50,
+      "shares": 3,
+      "avgBuyPrice": 125.13,
       "buyDate": "2026-06-30",
       "type": "ETF",
       "note": "Core positie - wereldwijde spreiding, gratis te handelen op DEGIRO kernselectie"
@@ -20,13 +20,13 @@
       "name": "NVIDIA Corporation",
       "exchange": "NDQ",
       "shares": 2,
-      "avgBuyPrice": 118.00,
+      "avgBuyPrice": 200.09,
       "buyDate": "2026-06-30",
       "type": "stock",
       "note": "AI-groei play, hoog momentum"
     }
   ],
-  "cash": 290.50,
+  "cash": 256,
   "transactions": [
     {
       "date": "2026-06-30",
@@ -38,21 +38,21 @@
       "date": "2026-06-30",
       "type": "buy",
       "ticker": "IWDA",
-      "shares": 5,
-      "price": 95.50,
-      "cost": 477.50,
-      "fee": 0,
-      "description": "Aankoop IWDA - kernselectie (gratis)"
+      "shares": 3,
+      "price": 125.13,
+      "cost": 375.39,
+      "fee": 3.00,
+      "description": "Aankoop IWDA - 3 aandelen @ €125.13"
     },
     {
       "date": "2026-06-30",
       "type": "buy",
       "ticker": "NVDA",
       "shares": 2,
-      "price": 118.00,
-      "cost": 236.00,
+      "price": 200.09,
+      "cost": 400.18,
       "fee": 2.00,
-      "description": "Aankoop NVDA - transactiekosten €2"
+      "description": "Aankoop NVDA - 2 aandelen @ $200.09"
     }
   ],
   "watchlist": [
