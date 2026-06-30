@@ -1,0 +1,62 @@
+{
+  "startDate": "2026-06-30",
+  "startCapital": 1000,
+  "currency": "EUR",
+  "broker": "DEGIRO",
+  "email": "vankempenjonah@gmail.com",
+  "holdings": [
+    {
+      "ticker": "IWDA",
+      "name": "iShares Core MSCI World ETF",
+      "exchange": "AMS",
+      "shares": 5,
+      "avgBuyPrice": 95.50,
+      "buyDate": "2026-06-30",
+      "type": "ETF",
+      "note": "Core positie - wereldwijde spreiding, gratis te handelen op DEGIRO kernselectie"
+    },
+    {
+      "ticker": "NVDA",
+      "name": "NVIDIA Corporation",
+      "exchange": "NDQ",
+      "shares": 2,
+      "avgBuyPrice": 118.00,
+      "buyDate": "2026-06-30",
+      "type": "stock",
+      "note": "AI-groei play, hoog momentum"
+    }
+  ],
+  "cash": 290.50,
+  "transactions": [
+    {
+      "date": "2026-06-30",
+      "type": "deposit",
+      "amount": 1000,
+      "description": "Startkapitaal"
+    },
+    {
+      "date": "2026-06-30",
+      "type": "buy",
+      "ticker": "IWDA",
+      "shares": 5,
+      "price": 95.50,
+      "cost": 477.50,
+      "fee": 0,
+      "description": "Aankoop IWDA - kernselectie (gratis)"
+    },
+    {
+      "date": "2026-06-30",
+      "type": "buy",
+      "ticker": "NVDA",
+      "shares": 2,
+      "price": 118.00,
+      "cost": 236.00,
+      "fee": 2.00,
+      "description": "Aankoop NVDA - transactiekosten €2"
+    }
+  ],
+  "watchlist": [
+    { "ticker": "SOXX", "name": "iShares Semiconductor ETF", "reason": "Chip sector herstel" },
+    { "ticker": "ASML", "name": "ASML Holding", "exchange": "AMS", "reason": "Nederlands AI-exposure, gratis op DEGIRO" }
+  ]
+}

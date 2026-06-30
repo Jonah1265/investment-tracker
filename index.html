@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jonah's Investment Dashboard</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0f0f13;
+      color: #e8e8f0;
+      min-height: 100vh;
+      padding: 16px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    header h1 { font-size: 1.2rem; font-weight: 600; color: #fff; }
+    header span { font-size: 0.8rem; color: #666; }
+
+    .cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: #1a1a24;
+      border-radius: 16px;
+      padding: 16px;
+      border: 1px solid #2a2a3a;
+    }
+
+    .card.full { grid-column: 1 / -1; }
+
+    .card label {
+      font-size: 0.72rem;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .card .value {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .card .sub {
+      font-size: 0.8rem;
+      margin-top: 4px;
+    }
+
+    .positive { color: #22c55e; }
+    .negative { color: #ef4444; }
+    .neutral { color: #888; }
+
+    .holdings-list { list-style: none; }
+
+    .holding-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid #2a2a3a;
+    }
+
+    .holding-item:last-child { border-bottom: none; }
+
+    .holding-left .ticker {
+      font-weight: 700;
+      font-size: 1rem;
+    }
+
+    .holding-left .name {
+      font-size: 0.72rem;
+      color: #888;
+      margin-top: 2px;
+    }
+
+    .holding-right { text-align: right; }
+
+    .holding-right .price {
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .holding-right .shares {
+      font-size: 0.72rem;
+      color: #888;
+      margin-top: 2px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 99px;
+      font-size: 0.68rem;
+      font-weight: 600;
+    }
+
+    .badge.buy { background: #16a34a22; color: #22c55e; border: 1px solid #22c55e44; }
+    .badge.sell { background: #dc262622; color: #ef4444; border: 1px solid #ef444444; }
+    .badge.hold { background: #ca8a0422; color: #f59e0b; border: 1px solid #f59e0b44; }
+
+    .updates-list { list-style: none; }
+
+    .update-item {
+      padding: 14px 0;
+      border-bottom: 1px solid #2a2a3a;
+    }
+
+    .update-item:last-child { border-bottom: none; }
+
+    .update-date {
+      font-size: 0.7rem;
+      color: #666;
+      margin-bottom: 4px;
+    }
+
+    .update-title {
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-bottom: 6px;
+    }
+
+    .update-summary {
+      font-size: 0.8rem;
+      color: #aaa;
+      line-height: 1.5;
+    }
+
+    .action-item {
+      font-size: 0.78rem;
+      color: #ccc;
+      margin-top: 6px;
+    }
+
+    .alloc-bar {
+      height: 8px;
+      background: #2a2a3a;
+      border-radius: 4px;
+      margin-top: 10px;
+      overflow: hidden;
+      display: flex;
+    }
+
+    .alloc-segment { height: 100%; }
+
+    .alloc-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.72rem;
+      color: #aaa;
+    }
+
+    .legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .loading { color: #666; font-size: 0.8rem; text-align: center; padding: 20px; }
+
+    section { margin-bottom: 20px; }
+    section h2 {
+      font-size: 0.8rem;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 12px;
+    }
+
+    .cash-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      color: #aaa;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>📈 Investment Dashboard</h1>
+  <span id="lastUpdated">laden...</span>
+</header>
+
+<div class="cards">
+  <div class="card">
+    <label>Portefeuillewaarde</label>
+    <div class="value" id="totalValue">—</div>
+    <div class="sub" id="totalReturn">—</div>
+  </div>
+  <div class="card">
+    <label>Kas</label>
+    <div class="value" id="cashValue">—</div>
+    <div class="sub neutral" id="cashPct">—</div>
+  </div>
+  <div class="card full">
+    <label>Allocatie</label>
+    <div class="alloc-bar" id="allocBar"></div>
+    <div class="alloc-legend" id="allocLegend"></div>
+  </div>
+</div>
+
+<section>
+  <h2>Posities</h2>
+  <div class="card">
+    <ul class="holdings-list" id="holdingsList">
+      <li class="loading">Koersen ophalen...</li>
+    </ul>
+    <div class="cash-row">
+      <span>Kas</span>
+      <span id="cashRow">—</span>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>Updates & Aanbevelingen</h2>
+  <div class="card">
+    <ul class="updates-list" id="updatesList">
+      <li class="loading">Laden...</li>
+    </ul>
+  </div>
+</section>
+
+<script>
+const COLORS = ['#6366f1', '#22c55e', '#f59e0b', '#ec4899', '#06b6d4'];
+
+async function loadPortfolio() {
+  const res = await fetch('portfolio.json?v=' + Date.now());
+  return res.json();
+}
+
+async function loadUpdates() {
+  const res = await fetch('updates.json?v=' + Date.now());
+  return res.json();
+}
+
+async function fetchPrice(ticker, exchange) {
+  try {
+    const symbol = exchange === 'AMS' ? ticker + '.AS' :
+                   exchange === 'NDQ' ? ticker : ticker;
+    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=1d&range=5d`;
+    const res = await fetch(url);
+    const data = await res.json();
+    const closes = data.chart.result[0].indicators.quote[0].close;
+    const filtered = closes.filter(v => v !== null);
+    return filtered[filtered.length - 1];
+  } catch {
+    return null;
+  }
+}
+
+function fmt(n, decimals = 2) {
+  return '€' + n.toFixed(decimals).replace('.', ',');
+}
+
+function pct(val, ref) {
+  const p = ((val - ref) / ref) * 100;
+  return (p >= 0 ? '+' : '') + p.toFixed(2) + '%';
+}
+
+async function render() {
+  const [portfolio, updates] = await Promise.all([loadPortfolio(), loadUpdates()]);
+
+  document.getElementById('lastUpdated').textContent = 'bijgewerkt: ' + new Date().toLocaleDateString('nl-NL', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+
+  // Fetch prices
+  const priceMap = {};
+  await Promise.all(portfolio.holdings.map(async h => {
+    const price = await fetchPrice(h.ticker, h.exchange);
+    priceMap[h.ticker] = price;
+  }));
+
+  // Calculate values
+  let investedValue = 0;
+  portfolio.holdings.forEach(h => {
+    const price = priceMap[h.ticker] || h.avgBuyPrice;
+    investedValue += price * h.shares;
+  });
+  const totalValue = investedValue + portfolio.cash;
+  const startCapital = portfolio.startCapital;
+  const returnAbs = totalValue - startCapital;
+  const returnPct = ((totalValue - startCapital) / startCapital) * 100;
+
+  document.getElementById('totalValue').textContent = fmt(totalValue);
+  const retEl = document.getElementById('totalReturn');
+  retEl.textContent = (returnAbs >= 0 ? '+' : '') + fmt(returnAbs) + ' (' + (returnPct >= 0 ? '+' : '') + returnPct.toFixed(2) + '%)';
+  retEl.className = 'sub ' + (returnAbs >= 0 ? 'positive' : 'negative');
+
+  document.getElementById('cashValue').textContent = fmt(portfolio.cash);
+  document.getElementById('cashPct').textContent = ((portfolio.cash / totalValue) * 100).toFixed(1) + '% van portfolio';
+  document.getElementById('cashRow').textContent = fmt(portfolio.cash);
+
+  // Holdings list
+  const holdingsList = document.getElementById('holdingsList');
+  holdingsList.innerHTML = '';
+  portfolio.holdings.forEach((h, i) => {
+    const price = priceMap[h.ticker] || h.avgBuyPrice;
+    const value = price * h.shares;
+    const gain = value - (h.avgBuyPrice * h.shares);
+    const gainPct = (gain / (h.avgBuyPrice * h.shares)) * 100;
+    const li = document.createElement('li');
+    li.className = 'holding-item';
+    li.innerHTML = `
+      <div class="holding-left">
+        <div class="ticker">${h.ticker}</div>
+        <div class="name">${h.name}</div>
+      </div>
+      <div class="holding-right">
+        <div class="price">${fmt(value)}</div>
+        <div class="shares ${gain >= 0 ? 'positive' : 'negative'}">${h.shares}x @ ${fmt(price)} (${gain >= 0 ? '+' : ''}${gainPct.toFixed(1)}%)</div>
+      </div>
+    `;
+    holdingsList.appendChild(li);
+  });
+
+  // Allocation bar
+  const allocBar = document.getElementById('allocBar');
+  const allocLegend = document.getElementById('allocLegend');
+  allocBar.innerHTML = '';
+  allocLegend.innerHTML = '';
+
+  const segments = portfolio.holdings.map((h, i) => ({
+    name: h.ticker,
+    value: (priceMap[h.ticker] || h.avgBuyPrice) * h.shares,
+    color: COLORS[i % COLORS.length]
+  }));
+  segments.push({ name: 'Kas', value: portfolio.cash, color: '#374151' });
+
+  segments.forEach(s => {
+    const pctVal = (s.value / totalValue) * 100;
+    const seg = document.createElement('div');
+    seg.className = 'alloc-segment';
+    seg.style.width = pctVal + '%';
+    seg.style.background = s.color;
+    allocBar.appendChild(seg);
+
+    const leg = document.createElement('div');
+    leg.className = 'legend-item';
+    leg.innerHTML = `<div class="legend-dot" style="background:${s.color}"></div>${s.name} ${pctVal.toFixed(0)}%`;
+    allocLegend.appendChild(leg);
+  });
+
+  // Updates
+  const updatesList = document.getElementById('updatesList');
+  updatesList.innerHTML = '';
+  [...updates].reverse().forEach(u => {
+    const li = document.createElement('li');
+    li.className = 'update-item';
+    const actions = (u.actions || []).map(a => `<div class="action-item">${a}</div>`).join('');
+    li.innerHTML = `
+      <div class="update-date">${u.date}</div>
+      <div class="update-title">${u.title}</div>
+      <div class="update-summary">${u.summary}</div>
+      ${actions}
+    `;
+    updatesList.appendChild(li);
+  });
+}
+
+render().catch(console.error);
+</script>
+
+</body>
+</html>
